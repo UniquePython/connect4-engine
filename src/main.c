@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
+
+#define ROWS 6
+#define COLS 7
 
 typedef enum
 {
@@ -10,9 +14,9 @@ typedef enum
 
 typedef struct
 {
-    Piece board[6][7];
+    Piece board[ROWS][COLS];
     Piece curr_player;
-    int col_heights[7];
+    int col_heights[COLS];
 } Board;
 
 void init_board(Board *b)
@@ -23,6 +27,13 @@ void init_board(Board *b)
     memset(b->board, PIECE_NONE, sizeof(b->board));
     b->curr_player = PIECE_PLAYER1;
     memset(b->col_heights, 0, sizeof(b->col_heights));
+}
+
+int where_to_drop_piece(const Board *b, int col)
+{
+    assert(0 <= col && col <= ROWS);
+    int height = b->col_heights[col];
+    return height == ROWS ? -1 : height;
 }
 
 int main(void)
