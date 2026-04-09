@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #define ROWS 6
 #define COLS 7
@@ -31,9 +32,32 @@ void init_board(Board *b)
 
 int where_to_drop_piece(const Board *b, int col)
 {
-    assert(0 <= col && col <= ROWS);
+    assert(0 <= col && col < COLS);
+
     int height = b->col_heights[col];
+    assert(0 <= height && height <= ROWS);
+
     return height == ROWS ? -1 : height;
+}
+
+bool drop_piece(Board *b, int col)
+{
+    if (!b)
+        return false;
+
+    assert(0 <= col && col < COLS);
+
+    int row = where_to_drop_piece(b, col);
+    if (row == -1)
+        return false;
+    assert(0 <= row && row < ROWS);
+
+    assert(b->board[row][col] == PIECE_NONE);
+    b->board[row][col] = b->curr_player;
+    b->col_heights[col] += 1;
+    b->curr_player = b->curr_player == PIECE_PLAYER1 ? PIECE_PLAYER2 : PIECE_PLAYER1;
+
+    return true;
 }
 
 int main(void)
