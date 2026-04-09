@@ -60,12 +60,64 @@ bool drop_piece(Board *b, int col)
     return true;
 }
 
+void print_board(const Board *b)
+{
+    if (!b)
+        return;
+
+    for (int row = ROWS - 1; row >= 0; row--)
+    {
+        for (int col = 0; col < COLS; col++)
+            printf("%s ", b->board[row][col] == PIECE_NONE ? "." : b->board[row][col] == PIECE_PLAYER1 ? "X"
+                                                                                                       : "O");
+        printf("\n");
+    }
+}
+
 int main(void)
 {
     Board b;
-
     init_board(&b);
 
-    printf("connect4-engine\n");
+    while (1)
+    {
+        print_board(&b);
+
+        printf("\nCurrent Player: %s\n", b.curr_player == PIECE_PLAYER1 ? "X" : "O");
+
+        int col;
+
+        while (1)
+        {
+            printf("Enter column (0-%d): ", COLS - 1);
+
+            if (scanf("%d", &col) != 1)
+            {
+                // invalid input (e.g., letters)
+                printf("Invalid input! Please enter a number.\n");
+
+                // clear input buffer
+                int ch;
+                while ((ch = getchar()) != '\n' && ch != EOF)
+                    ;
+                continue;
+            }
+
+            if (col < 0 || col >= COLS)
+            {
+                printf("Column out of range! Try again.\n");
+                continue;
+            }
+
+            if (!drop_piece(&b, col))
+            {
+                printf("Column is full! Try another.\n");
+                continue;
+            }
+
+            break; // valid move
+        }
+    }
+
     return 0;
 }
